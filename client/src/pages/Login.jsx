@@ -30,6 +30,15 @@ const Login = () => {
     });
   };
 
+  const resetFormData=(e)=>{
+    setFormData({
+            name: "",
+            email: "",
+            password: "",
+            role: "user",
+          })
+  }
+
   const handleState = () => {
     if (state === "Sign Up") {
       setState("Sign In");
@@ -51,7 +60,9 @@ const Login = () => {
 
         if (data.success) {
           toast.success("Account created successfully. Please login now.");
+          resetFormData();
           navigate("/login");
+          setState('Sign In');
         } else {
           toast.error(data.message || "Something went wrong");
         }

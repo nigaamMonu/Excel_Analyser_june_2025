@@ -18,7 +18,7 @@ const userAuth = async(req,res, next)=>{
     if(tokenDecoded.id){
       req.body = req.body ? req.body :{};
 
-      req.body.userId = tokenDecoded.id;
+      req.userId = tokenDecoded.id;
     }else{
       return res.json({success:false,
         message:'token id not avialable not authorised login agian.'

@@ -7,12 +7,13 @@ import cookieParser from 'cookie-parser';
 import connectDB from './config/mongodb.js';
 import authRouter from './Routes/authRouter.js';
 import userRouter from './Routes/userRouter.js';
+import uploadsRouter from './Routes/uploadsRouter.js';
 
 
 const app = express();
 
 const PORT =process.env.PORT || 4001;
-const allowedOrigins =['http://localhost:5174','http;//localhost:5173'];
+const allowedOrigins =['http://localhost:5174','http://localhost:5173'];
 
 
 app.use(express.json());
@@ -28,6 +29,7 @@ app.get('/',(req,res)=>{
 
 app.use('/api/auth',authRouter);
 app.use('/api/user',userRouter);
+app.use('/api/excel',uploadsRouter);
 
 app.listen(PORT,()=>{
   connectDB();

@@ -6,7 +6,7 @@ import userModel from "../models/userModel.js";
 export const getUserData = async (req,res)=>{
     
     try{
-      const {userId}= req.body;
+      const {userId}= req;
 
       if(!userId){
         return res.json({success:false,message:"User ID is required"});
