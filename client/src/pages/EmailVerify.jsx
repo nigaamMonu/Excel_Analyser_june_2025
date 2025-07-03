@@ -5,7 +5,7 @@ import axios from 'axios';
 import {toast} from 'react-toastify';
 
 const EmailVerify = () => {
-  // const {backEndUrl, isLoggedIn, userData, getUserData} =useContext(AppContext);
+  const {backEndUrl, isLoggedIn, userData, getUserData} =useContext(AppContext);
   const inputRefs = useRef([]);
   const navigate = useNavigate();
 
@@ -46,19 +46,19 @@ const EmailVerify = () => {
   const onSubmitHandler = async (e)=>{
     try{
       e.preventDefault();
-      // const otp= inputRefs.current.map(e=>e.value);
-      // const otpString = otp.join('');
+      const otp= inputRefs.current.map(e=>e.value);
+      const otpString = otp.join('');
 
-      // axios.defaults.withCredentials=true;
-      // const {data}= await axios.post(`${backEndUrl}/api/auth/verify-account`,{otp:otpString});
+      axios.defaults.withCredentials=true;
+      const {data}= await axios.post(`${backEndUrl}/api/auth/verify-account`,{otp:otpString});
 
-      // if(data.success){
-      //   toast.success(data.message);
-      //   getUserData();
-      //   navigate('/');
-      // }else {
-      //   toast.error(data.message || "Something went wrong");
-      // }
+      if(data.success){
+        toast.success(data.message);
+        getUserData();
+        navigate('/');
+      }else {
+        toast.error(data.message || "Something went wrong");
+      }
 
     }catch(err){
       toast.error(err.message || "Something went wrong");
@@ -67,9 +67,9 @@ const EmailVerify = () => {
 
  // useEffect to check if the user is already logged in and has verified their account
  // If so, it redirects them to the home page
-  // useEffect(()=>{
-  //   userData && isLoggedIn && userData.isAccountVerified && (toast.success("You are already logged in and your account is verified."), navigate('/'));
-  // },[userData, isLoggedIn]);
+  useEffect(()=>{
+    userData && isLoggedIn && userData.isAccountVerified && (toast.success("You are already logged in and your account is verified."), navigate('/'));
+  },[userData, isLoggedIn]);
 
   
 

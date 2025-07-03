@@ -12,10 +12,13 @@ import { HiMenu } from "react-icons/hi";
 
 const Navbar = () => {
 
-  const { isLoggedIn,setIsLoggedIn,setUserData, backEndUrl } = useContext(AppContext);
+  const { isLoggedIn,setIsLoggedIn,setUserData, backEndUrl, userData } = useContext(AppContext);
   const navigate = useNavigate();
   // State to manage the mobile menu visibility
   const [menuOpen, setMenuOpen] = useState(false);
+
+
+
 
   const toggleMenu = ()=>{
     setMenuOpen(!menuOpen);
@@ -41,6 +44,25 @@ const Navbar = () => {
       toast.error(err.message || "Something went wrong & logout failed.");
     }
   }
+
+
+  const handleSentEmail = async(e)=>{
+    try{
+      axios.defaults.withCredentials=true;
+      const {data}= await axios.post(`${backEndUrl}/api/auth/send-verify-otp`);
+
+
+      if(data.success){
+        toast.success(data.message || " Otp sent successfully.");
+        navigate('/email-verify');
+      }else{
+        toast.error(data.message);
+        navigate('/');
+      }
+    }catch(err){
+      toast.error(err.message);
+    }
+  }
   return (
     <nav className="h-[70px] relative w-full px-6 md:px-16 lg:px-24 xl:px-32 flex items-center justify-between z-30 bg-gradient-to-r from-indigo-700 to-violet-500 transition-all">
         
@@ -51,9 +73,9 @@ const Navbar = () => {
     <ul className="text-white md:flex hidden items-center gap-10">
         <li><Link className="hover:text-white/70 transition" to={"/"}>Home</Link></li>
         <li><Link className="hover:text-white/70 transition" to={"/login"}>login</Link></li>
-        {/* <li><Link className="hover:text-white/70 transition" to={"/email-verify"}>EmailVerify</Link></li> */}
+        {userData && !userData.isAccountVerified && <li><Link  onClick={handleSentEmail} className="hover:text-white/70 transition" to={"/email-verify"}>EmailVerify</Link></li> }
         
-        {/* <li><Link className="hover:text-white/70 transition" to={"/reset-password"}>ResetPassword</Link></li> */}
+        <li><Link className="hover:text-white/70 transition" to={"/reset-password"}>ResetPassword</Link></li> 
     </ul>
 
     <button onClick={handleLoginButton} type="button" className="cursor-pointer bg-white text-gray-700 md:inline hidden text-sm hover:opacity-90 active:scale-95 transition-all w-40 h-11 rounded-full">
@@ -69,9 +91,9 @@ const Navbar = () => {
           <li><Link onClick={toggleMenu} className="hover:text-white/70 transition" to={"/"}>Home</Link></li>
           <li><Link className="hover:text-white/70 transition" to={"/login"}>login</Link></li>
 
-          {/* <li><Link className="hover:text-white/70 transition" to={"/email-verify"}>EmailVerify</Link></li>
+          <li><Link onClick={handleSentEmail} className="hover:text-white/70 transition" to={"/email-verify"}>EmailVerify</Link></li>
           
-          <li><Link className="hover:text-white/70 transition" to={"/reset-password"}>ResetPassword</Link></li> */}
+          <li><Link className="hover:text-white/70 transition" to={"/reset-password"}>ResetPassword</Link></li>
         </ul>
         <button onClick={handleLoginButton} type="button" className="bg-white text-gray-700 mt-6 inline md:hidden text-sm hover:opacity-90 active:scale-95 transition-all w-40 h-11 rounded-full">
             {isLoggedIn ? "logout" :"login"}

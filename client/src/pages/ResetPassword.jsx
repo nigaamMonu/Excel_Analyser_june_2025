@@ -19,23 +19,23 @@ const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [showPassword, setShowPassword]=useState(false);
 
-  // const {backEndUrl} = useContext(AppContext);
+  const {backEndUrl} = useContext(AppContext);
 
 
   const handleSubmitForSendingResetPasswordOtp= async (e)=>{
     try{
       e.preventDefault();
-      // axios.defaults.withCredentials = true;
-      // const {data} =await axios.post(`${backEndUrl}/api/auth/send-reset-otp`,{email:email});
+      axios.defaults.withCredentials = true;
+      const {data} =await axios.post(`${backEndUrl}/api/auth/send-reset-otp`,{email:email});
 
-      // if(data.success){
-      //   setEmailSent(true);
-      //   toast.success("Otp sent to your email, please check your inbox.");
-      // }
-      // else{
-      //   setEmailSent(false);
-      //   toast.error(data.message || "Something went wrong, please try again later.");
-      // }
+      if(data.success){
+        setEmailSent(true);
+        toast.success("Otp sent to your email, please check your inbox.");
+      }
+      else{
+        setEmailSent(false);
+        toast.error(data.message || "Something went wrong, please try again later.");
+      }
 
     }catch(err){
       toast.error(err.message || "Something went wrong, please try again later.");
@@ -45,20 +45,20 @@ const ResetPassword = () => {
   const handlerForResetPassword=async(e)=>{
     try{
       e.preventDefault();
-      // axios.defaults.withCredentials = true;
-      // const {data}=await axios.post(`${backEndUrl}/api/auth/reset-password`,{otp,newPassword,email});
+      axios.defaults.withCredentials = true;
+      const {data}=await axios.post(`${backEndUrl}/api/auth/reset-password`,{otp,newPassword,email});
 
 
-      // if(data.success){
-      //   toast.success("Password changed successfully, you can now login with your new password.");
-      //   setEmailSent(false);
-      //   setOtp("");
-      //   setNewPassword("");
-      //   navigate('/login');
+      if(data.success){
+        toast.success("Password changed successfully, you can now login with your new password.");
+        setEmailSent(false);
+        setOtp("");
+        setNewPassword("");
+        navigate('/login');
         
-      // }else{
-      //   toast.error(data.message || "Something went wrong, please try again later.");
-      // }
+      }else{
+        toast.error(data.message || "Something went wrong, please try again later.");
+      }
     }catch(err){
       const errorMessage = err.response?.data?.message || err.message || "Something went wrong, please try again later.";
       toast.error(errorMessage);

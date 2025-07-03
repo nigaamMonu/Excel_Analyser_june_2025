@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 
 /// local imports
 import userModel from "../models/userModel.js";
+import transporter from '../config/nodemailer.js';
 
 
 // api/auth/register controller
@@ -39,10 +40,14 @@ export const register = async (req, res) => {
     })
 
 
-    // mail sending logic can be added here
-
-
-
+    // sending email
+    const mailOptions ={
+      from:process.env.SENDER_EMAIL,
+      to:email,
+      subject:'Welcome to Excel analyser.',
+      text : `Hello ${name}, Welcome to Excel analyser website. Your account has been created with email : ${email}. Please verify your email.`
+    }
+    await transporter.sendMail(mailOptions)
 
     return res.json({success:true,message:"User registered successfully."});
   }catch(err){
@@ -110,3 +115,145 @@ export const logout = async (req, res)=>{
 // export const isAuthenticated = async(req,res)=>{
 
 // }
+
+
+// sending vrification otp 
+export const sendVeirfyOtp= async (req,res)=>{
+  try{
+    const {userId}=req;
+    const user =await userModel.findById(userId);
+
+    if(user.isAccountVerified){
+      return res.json({success:false,message:"account already verified"})
+    }
+
+    const otp= String(Math.floor(100000+Math.random()*900000));
+
+    user.verifyOtp=otp;
+    user.verifyOtpExpireAt=Date.now()+24*60*60*1000;
+
+    await user.save();
+
+    const emailOptions={
+      from:process.env.SENDER_EMAIL,
+      to:user.email,
+      subject: "Account verification otp.",
+      text:`Your OTP is ${otp}. Verify your account with  this otp.`
+    }
+    await transporter.sendMail(emailOptions);
+
+    return res.json({success:true,message:"verification OTP sent on email."})
+  }catch(err){
+    return res.json({success:false, message:err.message})
+  }
+}
+
+
+// get the otp and verify the otp
+export const verifyEmail=async(req,res)=>{
+  const { otp} = req.body;
+  const {userId} = req;
+  if(!userId || ! otp){
+    return res.json({success:false, message:"missing details"});
+  }
+
+  try{
+    const user = await userModel.findById(userId);
+    if(!user){
+      return res.json({success:false,message:"user not fount"});
+    }
+
+    if(user.verifyOtp === "" || user.verifyOtp != otp){
+      return res.json({success:false, message:"invalid otp"});
+    }
+
+    if(user.verifyOtpExpireAt < Date.now()){
+      return res.json({success:false,message:"otp expired"});
+    }
+
+    user.isAccountVerified=true;
+    user.verifyOtp="";
+    user.verifyOtpExpireAt=0;
+    await user.save();
+
+    return res.json({success:true, message:"email verified successfully."});
+  }catch(err){
+    return res.json({success:false,message:err.message});
+  }
+}
+
+// sending reset password otp
+export const sendResetOtp=async (req,res)=>{
+  const {email} =req.body;
+  if(!email){
+    return res.status(401).json({success:false,message:"Email is required for reset otp."});
+
+  }
+
+  try{
+    const user= await userModel.findOne({email});
+
+
+    if(!user){
+    
+      return res.json({success:false, message:"User not found, register first"});
+    }
+
+    const newOtp=String(Math.floor(100000+Math.random()*900000))
+
+    user.resetOtp=newOtp;
+    user.resetOtpExpireAt=Date.now()+15*60*1000;
+
+    await user.save();
+
+ 
+    const mailOptions={
+      from :process.env.SENDER_EMAIL,
+      to: email,
+      subject:" Password Reset OTP",
+      text:`Your OTP for reset password is ${newOtp}.`
+    }
+    await transporter.sendMail(mailOptions);
+
+    return res.json({success:true, message:"OTP for reset send successfully"});
+
+  }catch(err){
+    return res.status(401).json({success:false, message:err.message});
+  }
+}
+
+// Reset user Passwort
+export const resetPassword= async(req,res)=>{
+  const {email,otp,newPassword}=req.body;
+
+  if(!email || !otp || !newPassword){
+    return res.json({success:false, message:"Email, OTP, newPassword are required,"});
+  }
+
+  try{
+    const user =await userModel.findOne({email});
+    if(!user){
+      return res.json({success:false, message:"User not found, register first"});
+    }
+
+    if(Date.now() > user.resetOtpExpireAt){
+      return res.json({success:false, message:"otp has expired, generate again"});
+    }
+    if(otp===user.resetOtp){
+      const hashedPassword=await bcrypt.hash(newPassword,10);
+      user.password = hashedPassword;
+      user.resetOtp = "";
+      user.resetOtpExpireAt = 0;
+
+      user.save();
+
+      return res.json({success:true, message:"password changed successfully."});
+    }else{
+      return res.json({success:false, message:"Invalid OTP"});
+    }
+
+
+  }catch(err){
+    return res.status(401).json({success:false, message:err.message});
+  }
+}
