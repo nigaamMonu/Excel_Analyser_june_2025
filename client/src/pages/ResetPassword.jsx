@@ -1,4 +1,7 @@
 import {  useContext, useState } from 'react';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 // react-icons
 import { MdLockReset } from "react-icons/md";
@@ -6,10 +9,10 @@ import { LuEyeClosed,LuEye } from "react-icons/lu";
 import { RiLockPasswordLine } from "react-icons/ri";
 
 
-import axios from 'axios';
+
 import {AppContext} from '../context/AppContext';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const ResetPassword = () => {
   const [email,setEmail]=useState("");
@@ -68,6 +71,8 @@ const ResetPassword = () => {
 
 
   return (
+    <>
+    <Navbar/>
   <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10 transition-all duration-500">
     {!emailSent ? (
       <form
@@ -153,6 +158,8 @@ const ResetPassword = () => {
       </form>
     )}
   </div>
+  <Footer/>
+  </>
 );
 
 }

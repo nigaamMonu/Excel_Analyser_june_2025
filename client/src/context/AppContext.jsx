@@ -13,6 +13,21 @@ export const AppContextProvider=(props)=>{
   const [userData,setUserData]= useState(false);
 
 
+  //  fucntion to get authentication status
+  const getAuthStatus = async () => {
+    try{
+      axios.defaults.withCredentials = true; // to allow cookies to be sent with requests
+      const {data} = await axios.get(`${backEndUrl}/api/auth/is-auth`);
+      if(data.success){
+        setIsLoggedIn(true);
+        getUserData();
+      }
+
+    }catch(err){
+      toast.error(err.message);
+    }
+  }
+
   const getUserData = async () =>{
     try{
       axios.defaults.withCredentials=true;
@@ -20,7 +35,7 @@ export const AppContextProvider=(props)=>{
 
       if(data.success){
         setUserData(data.userData);
-        setIsLoggedIn(true);
+        // setIsLoggedIn(true);
       }else {
         toast.error(data.message);
       }
@@ -30,7 +45,7 @@ export const AppContextProvider=(props)=>{
   }
 
   useEffect(()=>{
-    getUserData();
+    getAuthStatus();
   },[])
 
   const value={

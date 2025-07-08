@@ -2,8 +2,8 @@ import { assets } from '../assets/assets'
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-gradient-to-b from-indigo-700 to-violet-500 transition-all text-white">
-    <div className="max-w-7xl mx-auto px-6 py-16 flex flex-col items-center">
+    <footer className="bottom-0 left-0 right-0 z-50 w-full bg-gradient-to-b from-indigo-700 to-violet-500 transition-all text-white">
+    <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col items-center">
         <div className="flex items-center space-x-3 mb-6">
             <img alt="" className="h-11"
                 src={assets.logo} />

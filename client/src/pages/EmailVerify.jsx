@@ -3,6 +3,8 @@ import { AppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {toast} from 'react-toastify';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const EmailVerify = () => {
   const {backEndUrl, isLoggedIn, userData, getUserData} =useContext(AppContext);
@@ -74,7 +76,10 @@ const EmailVerify = () => {
   
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <>
+    <Navbar/>
+    <div className="min-h-screen flex  items-center justify-center bg-gray-50 px-4">
+      
       <form onSubmit={onSubmitHandler} className="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center">
         <h2 className="text-2xl font-semibold mb-4 text-gray-800">
           Enter your OTP
@@ -94,7 +99,7 @@ const EmailVerify = () => {
               onInput={(e) => handleInput(e, idx)}
               onKeyDown={(e)=> handleKeyDown(e,idx)}
               onPaste={handlePaste}
-              className="w-12 h-12 text-center border border-gray-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-8 md:w-12 md:h-12 h-8 text-center border border-gray-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           ))}
         </div>
@@ -106,6 +111,8 @@ const EmailVerify = () => {
         </button>
       </form>
     </div>
+    <Footer/>
+    </>
   );
 };
 

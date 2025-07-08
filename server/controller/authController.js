@@ -111,10 +111,13 @@ export const logout = async (req, res)=>{
 
 
 // check authenticated
-
-// export const isAuthenticated = async(req,res)=>{
-
-// }
+export const isAuthenticated=async (req,res)=>{
+  try{
+    return res.json({success:true});
+  }catch(err){
+    return res.status(401).json({success:false,message:err.message});
+  }
+}
 
 
 // sending vrification otp 

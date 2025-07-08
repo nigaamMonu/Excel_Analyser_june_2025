@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { LuEyeClosed, LuEye } from "react-icons/lu";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -86,20 +88,17 @@ const Login = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-6">
-      <img
-        onClick={() => navigate("/")}
-        src={assets.logo}
-        alt="logo"
-        className="absolute left-5 sm:left-20 top-5 w-24 sm:w-32 cursor-pointer"
-      />
+    <>
+     <Navbar />
+    
+    <div className=" min-h-screen overflow-auto bg-gray-50 flex  items-center justify-center px-4 py-6">
 
       <div className="flex items-center justify-center w-full">
         <form
           onSubmit={handleSubmit}
-          className="bg-white shadow-lg rounded-lg p-8 w-full max-w-sm sm:max-w-md md:max-w-lg flex flex-col gap-5"
+          className="bg-white shadow-lg rounded-2xl p-6 sm:p-8 w-full max-w-sm sm:max-w-md md:max-w-lg flex flex-col gap-4"
         >
-          <h2 className="text-3xl font-semibold text-center text-gray-800">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800">
             {state === "Sign Up"
               ? "Create your account"
               : "Login to your account!"}
@@ -184,6 +183,8 @@ const Login = () => {
         </form>
       </div>
     </div>
+    <Footer/>
+    </>
   );
 };
 
