@@ -2,6 +2,7 @@
 import { useState, createContext, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from 'axios';
+import {useNavigate} from 'react-router-dom'
 
 
 export const AppContext=createContext();
@@ -12,6 +13,8 @@ export const AppContextProvider=(props)=>{
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData,setUserData]= useState(false);
 
+  const navigate=useNavigate();
+
 
   //  fucntion to get authentication status
   const getAuthStatus = async () => {
@@ -21,6 +24,9 @@ export const AppContextProvider=(props)=>{
       if(data.success){
         setIsLoggedIn(true);
         getUserData();
+      }else {
+        toast.warn("Please login first.");
+        navigate('/login');
       }
 
     }catch(err){
@@ -35,7 +41,7 @@ export const AppContextProvider=(props)=>{
 
       if(data.success){
         setUserData(data.userData);
-        // setIsLoggedIn(true);
+        setIsLoggedIn(true);
       }else {
         toast.error(data.message);
       }

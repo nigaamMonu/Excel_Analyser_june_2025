@@ -8,10 +8,16 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recha
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 
+import { FaRegLaughWink } from "react-icons/fa";
+import { LiaSadCry } from "react-icons/lia";
+import { MdClose } from "react-icons/md";
+
 const Home = () => {
   const { userData, backEndUrl } = useContext(AppContext);
   const [files, setFiles] = useState([]);
   const [charts, setCharts] = useState([]);
+  const [deletePopUp,setDeletePopUp] = useState(false);
+  const [currentFileId, setCurrentFileId] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,8 +27,6 @@ const Home = () => {
         const { data } = await axios.get(`${backEndUrl}/api/excel/all`);
         if (data.success) {
           setFiles(data.files);
-        }else{
-          toast.error(data.message);
         }
       } catch (error) {
         toast.error( error.message || "Failed to fetch files.");
@@ -44,6 +48,10 @@ const Home = () => {
       toast.error("Error deleting file.");
     }
   };
+
+  const toggleDeletePopUp=()=>{
+    setDeletePopUp(!deletePopUp);
+  }
 
   return (
     <>
@@ -83,8 +91,8 @@ const Home = () => {
       </div>
 
       {/* Recent Files */}
-      <div className="bg-white shadow-md rounded-xl p-6 mb-12">
-        <div className="flex justify-between items-center mb-4">
+      <div className="bg-white max-h-[300px] overflow-hidden  shadow-md rounded-xl p-6 mb-12">
+        <div className="sticky flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-700">Recent Files</h2>
           <button
             onClick={() => navigate("/upload")}
@@ -93,9 +101,9 @@ const Home = () => {
             + Upload
           </button>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-y-auto max-h-[240px] px-6 pb-4">
           <table className="table-auto w-full text-sm text-left">
-            <thead className="bg-gray-100 text-gray-600">
+            <thead className="sticky top-0 bg-white z-10 border-b border-gray-200 text-gray-600">
               <tr>
                 <th className="p-3">File Name</th>
                 <th className="p-3">Date Uploaded</th>
@@ -123,7 +131,11 @@ const Home = () => {
                       </button>
                       <button
                         className="text-red-500 hover:underline"
-                        onClick={() => handleDelete(file._id)}
+                        // onClick={() => handleDelete(file._id)}
+                        onClick={()=>{
+                          setCurrentFileId(file._id);
+                          toggleDeletePopUp();
+                        }}
                       >
                         Delete
                       </button>
@@ -135,6 +147,43 @@ const Home = () => {
           </table>
         </div>
       </div>
+
+
+      {deletePopUp && (
+                <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-55">
+                  <div className="bg-white p-6 rounded-xl shadow-2xl w-80 relative">
+                    <button
+                      onClick={toggleDeletePopUp}
+                      className="absolute top-3 right-3 text-gray-600 hover:text-red-500"
+                    >
+                      <MdClose size={24} />
+                    </button>
+                    <h3 className="text-lg font-semibold text-indigo-600 mb-4">
+                      Are you sure you want to delete this file?
+                    </h3>
+                    <div className="flex gap-4">
+                      <button
+                        onClick={toggleDeletePopUp}
+                        className="bg-green-800 text-white px-4 py-2 rounded hover:bg-green-600"
+                      >
+                        just Kidding <FaRegLaughWink className="inline-block ml-1" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleDelete(currentFileId);
+                          toggleDeletePopUp();
+                          setCurrentFileId("");
+                        }
+                          
+                        }
+                        className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-600"
+                      >
+                        Delete <LiaSadCry className="inline-block ml-1" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
       {/* Recent Charts */}
 

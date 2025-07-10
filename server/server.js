@@ -8,6 +8,7 @@ import connectDB from './config/mongodb.js';
 import authRouter from './Routes/authRouter.js';
 import userRouter from './Routes/userRouter.js';
 import uploadsRouter from './Routes/uploadsRouter.js';
+import chartRouter from './Routes/chartRouter.js';
 
 
 const app = express();
@@ -30,6 +31,7 @@ app.get('/',(req,res)=>{
 app.use('/api/auth',authRouter);
 app.use('/api/user',userRouter);
 app.use('/api/excel',uploadsRouter);
+app.use('/api/chart',chartRouter);
 
 app.listen(PORT,()=>{
   connectDB();

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -45,7 +45,7 @@ const Upload = () => {
         // Now fetch the latest file for the logged-in user
         const fileListRes = await axios.get(`${backEndUrl}/api/excel/all`);
 
-        const latestFile = fileListRes.data.files[fileListRes.data.files.length - 1]; // get the last one
+        const latestFile = fileListRes.data.files[0]; // get the first one
         setFileData(latestFile.data);
         setFileId(latestFile._id);
       } else {
@@ -55,6 +55,9 @@ const Upload = () => {
       toast.error(err.message || "Upload failed");
     }
   };
+  useEffect(()=>{
+    scrollTo(0,0);
+  },[]);
 
   return (
     <>
