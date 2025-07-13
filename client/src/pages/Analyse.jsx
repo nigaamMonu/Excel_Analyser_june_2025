@@ -1,19 +1,18 @@
-import  { useState, useEffect,useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import jsPDF from "jspdf";
 import { Chart as ChartJS } from "chart.js/auto";
-import { Bar, Line, Pie, Scatter } from "react-chartjs-2";
+import { Bar, Line, Pie, Doughnut } from "react-chartjs-2";
 
 import { MdClose } from "react-icons/md";
-
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { AppContext } from "../context/AppContext";
 
-const chartTypes2D = ["Bar", "Line", "Pie", "Scatter"];
+const chartTypes2D = ["Bar", "Line", "Pie", "Doughnut"];
 const chartTypes3D = ["3D Bar", "3D Line"];
 
 const Analyse = () => {
@@ -73,29 +72,29 @@ const Analyse = () => {
   };
 
   const downloadChart = (type) => {
-  const canvas = document.querySelector("canvas");
-  if (!canvas) return toast.error("Chart not rendered yet.");
+    const canvas = document.querySelector("canvas");
+    if (!canvas) return toast.error("Chart not rendered yet.");
 
-  const imageURL = canvas.toDataURL("image/png");
+    const imageURL = canvas.toDataURL("image/png");
 
-  if (type === "png") {
-    const link = document.createElement("a");
-    link.download = "chart.png";
-    link.href = imageURL;
-    link.click();
-  } else if (type === "pdf") {
-    const pdf = new jsPDF({
-      orientation: "landscape",
-      unit: "px",
-      format: [canvas.width, canvas.height],
-    });
+    if (type === "png") {
+      const link = document.createElement("a");
+      link.download = "chart.png";
+      link.href = imageURL;
+      link.click();
+    } else if (type === "pdf") {
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "px",
+        format: [canvas.width, canvas.height],
+      });
 
-    pdf.addImage(imageURL, "PNG", 0, 0, canvas.width, canvas.height);
-    pdf.save("chart.pdf");
-  }
+      pdf.addImage(imageURL, "PNG", 0, 0, canvas.width, canvas.height);
+      pdf.save("chart.pdf");
+    }
 
-  setDownloadPopup(false);
-};
+    setDownloadPopup(false);
+  };
 
   const renderChart = () => {
     switch (chartType) {
@@ -105,8 +104,8 @@ const Analyse = () => {
         return <Line data={chartData} />;
       case "Pie":
         return <Pie className="max-h-70" data={chartData} />;
-      case "Scatter":
-        return <Scatter data={chartData} />;
+      case "Doughnut":
+        return <Doughnut className="max-h-70" data={chartData} />;
       default:
         return (
           <p className="text-center text-gray-600">3D charts coming soon...</p>
@@ -207,29 +206,35 @@ const Analyse = () => {
                 Chart Preview
               </h2>
               <div className="overflow-auto max-h-[400px] border rounded-md">
-              <table className="min-w-full table-auto border-collapse">
-                <thead className="bg-indigo-600 text-white sticky top-0">
-                  <tr>
-                    {Object.keys(fileData[0]).map((key, idx) => (
-                      <th key={idx} className="px-4 py-2 border text-left text-sm font-medium">
-                        {key}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {fileData.map((row, idx) => (
-                    <tr key={idx} className="even:bg-gray-100">
-                      {Object.values(row).map((val, i) => (
-                        <td key={i} className="px-4 py-2 border text-sm text-gray-700">
-                          {val}
-                        </td>
+                <table className="min-w-full table-auto border-collapse">
+                  <thead className="bg-indigo-600 text-white sticky top-0">
+                    <tr>
+                      {Object.keys(fileData[0]).map((key, idx) => (
+                        <th
+                          key={idx}
+                          className="px-4 py-2 border text-left text-sm font-medium"
+                        >
+                          {key}
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {fileData.map((row, idx) => (
+                      <tr key={idx} className="even:bg-gray-100">
+                        {Object.values(row).map((val, i) => (
+                          <td
+                            key={i}
+                            className="px-4 py-2 border text-sm text-gray-700"
+                          >
+                            {val}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>
@@ -240,7 +245,7 @@ const Analyse = () => {
             <div className="bg-white p-6 rounded-xl shadow-2xl max-w-3xl w-full relative">
               <button
                 onClick={() => setChartPopup(false)}
-                className="absolute top-3 right-3 text-gray-600 hover:text-red-500"
+                className="absolute cursor-pointer top-3 right-3 text-gray-600 hover:text-red-500"
               >
                 <MdClose size={24} />
               </button>
@@ -250,13 +255,13 @@ const Analyse = () => {
               <div className="flex justify-end gap-4">
                 <button
                   onClick={saveChart}
-                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer"
                 >
                   Save
                 </button>
                 <button
                   onClick={() => setDownloadPopup(true)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
                 >
                   Download
                 </button>
@@ -271,7 +276,7 @@ const Analyse = () => {
             <div className="bg-white p-6 rounded-xl shadow-2xl w-80 relative">
               <button
                 onClick={() => setDownloadPopup(false)}
-                className="absolute top-3 right-3 text-gray-600 hover:text-red-500"
+                className="absolute cursor-pointer top-3 right-3 text-gray-600 hover:text-red-500"
               >
                 <MdClose size={24} />
               </button>
@@ -281,13 +286,13 @@ const Analyse = () => {
               <div className="flex gap-4">
                 <button
                   onClick={() => downloadChart("png")}
-                  className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                  className="cursor-pointer bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
                 >
                   PNG
                 </button>
                 <button
                   onClick={() => downloadChart("pdf")}
-                  className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                  className="cursor-pointer bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
                 >
                   PDF
                 </button>

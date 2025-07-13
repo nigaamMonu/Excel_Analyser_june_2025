@@ -11,7 +11,7 @@ const chartSchema= mongoose.Schema({
 
   },
   chartType:{
-    type:String,required:true,enum:['Bar', 'Line', 'Pie', 'Scatter','3D Bar', '3D Line'],
+    type:String,required:true,enum:['Bar', 'Line', 'Pie', 'Doughnut','3D Bar', '3D Line'],
   },
   xAxis:{
     type:String,required:true,
@@ -23,7 +23,7 @@ const chartSchema= mongoose.Schema({
     type:String,required:true,
   }
 },{
-  Timestamps:true,
+  timestamps:true
 });
 
 const chartModel= mongoose.models.charts || mongoose.model('charts',chartSchema);
