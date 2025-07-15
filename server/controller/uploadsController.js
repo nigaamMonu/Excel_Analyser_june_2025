@@ -2,6 +2,7 @@ import xlsx from 'xlsx';
 import fs from 'fs';
 import mongoose from 'mongoose';
 import excelSheetModel from '../models/ExcelSheetModel.js';
+import chartModel from '../models/chartModel.js';
 
 // function to upload a file 
 export const uploadExcel = async (req,res)=>{
@@ -79,7 +80,13 @@ export const deleteExcelFileById = async (req, res) => {
 
     const deleted = await excelSheetModel.findOneAndDelete({ _id: fileId, user: req.userId });
 
+    const deleteChartRelatedWithFile= await chartModel.deleteMany({fileId:fileId});
+
     if (!deleted) return res.json({ success: false, message: "File not found or not authorized" });
+
+    if(!deleteChartRelatedWithFile){
+      return res.json({ success: false, message: "Error deleting charts related to this file" });
+    }
 
     return res.json({ success: true, message: "File deleted successfully" });
   } catch (err) {

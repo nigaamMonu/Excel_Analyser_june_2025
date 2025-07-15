@@ -64,6 +64,7 @@ const Home = () => {
       if (data.success) {
         toast.success("File deleted successfully.");
         setFiles((prev) => prev.filter((f) => f._id !== id));
+        setCharts((prev)=>prev.filter((chart)=>chart.fileId!==id));
       }
     } catch (err) {
       toast.error("Error deleting file.");
