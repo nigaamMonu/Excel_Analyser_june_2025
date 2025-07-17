@@ -11,6 +11,7 @@ import Upload from "./pages/Upload";
 import EmailVerify from "./pages/EmailVerify"
 import ResetPassword from "./pages/ResetPassword";
 import Analyse from "./pages/Analyse";
+import Admin from "./pages/admin";
 
 
 const App = () => {
@@ -24,6 +25,8 @@ const App = () => {
         <Route path="/reset-password" element={<ResetPassword/>} />
         <Route path="/upload" element={<Upload/>} />
         <Route path="/analyze/:id" element={<Analyse/>} />
+
+        <Route path='/admin' element={<Admin/>}/>
       </Routes>
     </div>
   )

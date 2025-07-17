@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import { Bar, Line, Pie, Doughnut } from "react-chartjs-2";
 import jsPDF from "jspdf";
 
-
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 
@@ -45,16 +44,15 @@ const Home = () => {
     fetchCharts();
   }, [backEndUrl]);
 
-
   const fetchCharts = async () => {
-  try {
-    const { data } = await axios.get(`${backEndUrl}/api/chart/user-all`, {
-      withCredentials: true,
-    });
-    if (data.success) setCharts(data.charts);
-  } catch (error) {
-    toast.error("Failed to fetch charts");
-  }
+    try {
+      const { data } = await axios.get(`${backEndUrl}/api/chart/user-all`, {
+        withCredentials: true,
+      });
+      if (data.success) setCharts(data.charts);
+    } catch (error) {
+      toast.error("Failed to fetch charts");
+    }
   };
 
   const handleDelete = async (id) => {
@@ -64,7 +62,7 @@ const Home = () => {
       if (data.success) {
         toast.success("File deleted successfully.");
         setFiles((prev) => prev.filter((f) => f._id !== id));
-        setCharts((prev)=>prev.filter((chart)=>chart.fileId!==id));
+        setCharts((prev) => prev.filter((chart) => chart.fileId !== id));
       }
     } catch (err) {
       toast.error("Error deleting file.");
@@ -74,7 +72,6 @@ const Home = () => {
   const toggleDeletePopUp = () => {
     setDeletePopUp(!deletePopUp);
   };
-
 
   const downloadRenderedChart = (type) => {
     const canvas = document.querySelector("#homeChart canvas");
@@ -90,8 +87,8 @@ const Home = () => {
     } else if (type === "pdf") {
       const pdf = new jsPDF({
         orientation: "landscape",
-       unit: "px",
-       format: [canvas.width, canvas.height],
+        unit: "px",
+        format: [canvas.width, canvas.height],
       });
       pdf.addImage(imageURL, "PNG", 0, 0, canvas.width, canvas.height);
       pdf.save("chart.pdf");
@@ -100,9 +97,12 @@ const Home = () => {
 
   const openChartPopup = async (chart) => {
     try {
-      const { data } = await axios.get(`${backEndUrl}/api/excel/${chart.fileId}`, {
-        withCredentials: true,
-      });
+      const { data } = await axios.get(
+        `${backEndUrl}/api/excel/${chart.fileId}`,
+        {
+          withCredentials: true,
+        }
+      );
 
       const fileData = data.file?.data || [];
 
@@ -114,22 +114,22 @@ const Home = () => {
   };
 
   const handleChartDelete = async (chartId) => {
-    try{
-      axios.defaults.withCredentials=true;
-      const {data} = await axios.delete(`${backEndUrl}/api/chart/delete/${chartId}`);
+    try {
+      axios.defaults.withCredentials = true;
+      const { data } = await axios.delete(
+        `${backEndUrl}/api/chart/delete/${chartId}`
+      );
 
-      if(data.success){
+      if (data.success) {
         toast.success("Chart deleted successfully.");
         setCharts((prev) => prev.filter((c) => c._id !== chartId));
-      }else {
+      } else {
         toast.error(data.message || "Failed to delete chart.");
       }
-    }catch(err){
+    } catch (err) {
       toast.error(err.message);
     }
-  }
-
-
+  };
 
   return (
     <>
@@ -210,13 +210,16 @@ const Home = () => {
                     <tr key={file._id} className="border-b">
                       <td className="p-3 font-medium">{file.fileName}</td>
                       <td className="p-3">
-                        {new Date(file.createdAt).toLocaleDateString()}
+                        {new Date(file.createdAt).toLocaleDateString("en-GB")}
                       </td>
                       <td className="p-3">{file.sizeKB?.toFixed(2)} KB</td>
                       <td className="p-3 space-x-3">
                         <button
                           className="text-blue-600 hover:underline cursor-pointer"
-                          onClick={() => navigate(`/analyze/${file._id}`)}
+                          onClick={() => {
+                            navigate(`/analyze/${file._id}`)
+                            scrollTo(0, 0);
+                          }}
                         >
                           Analyze
                         </button>
@@ -241,7 +244,7 @@ const Home = () => {
 
         {deletePopUp && (
           <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-55">
-            <div className="bg-white p-6 rounded-xl shadow-2xl w-80 relative">
+            <div className="bg-white p-6 rounded-xl shadow-2xl w-100 relative">
               <button
                 onClick={toggleDeletePopUp}
                 className="absolute top-3 right-3 text-gray-600 hover:text-red-500 cursor-pointer"
@@ -250,8 +253,13 @@ const Home = () => {
               </button>
               <h3 className="text-lg font-semibold text-indigo-600 mb-4">
                 Are you sure you want to delete this file?
+                <br />
+                <span className="text-sm font-normal text-red-900">
+                  This will also permanently delete all charts associated with
+                  this file.
+                </span>
               </h3>
-              <div className="flex gap-4">
+              <div className="flex gap-4 justify-evenly">
                 <button
                   onClick={toggleDeletePopUp}
                   className="bg-green-800 text-white px-4 py-2 rounded hover:bg-green-600 cursor-pointer"
@@ -299,10 +307,12 @@ const Home = () => {
                   charts.map((chart) => (
                     <tr key={chart._id} className="border-b">
                       <td className="p-3 font-medium">{chart.fileName}</td>
-                      <td>{new Date(chart.createdAt).toLocaleDateString()}</td>
+                      <td>
+                        {new Date(chart.createdAt).toLocaleDateString("en-GB")}
+                      </td>
                       <td className="p-3">
                         <button
-                         onClick={() => {
+                          onClick={() => {
                             openChartPopup(chart);
                           }}
                           className="text-indigo-600 hover:underline cursor-pointer"
@@ -310,7 +320,12 @@ const Home = () => {
                           View Chart
                         </button>
                       </td>
-                      <td onClick={()=> handleChartDelete(chart._id)} className="p-3 cursor-pointer text-red-800  hover:text-red-600"><MdDeleteSweep size={24}/> </td>
+                      <td
+                        onClick={() => handleChartDelete(chart._id)}
+                        className="p-3 cursor-pointer text-red-800  hover:text-red-600"
+                      >
+                        <MdDeleteSweep size={24} />{" "}
+                      </td>
                     </tr>
                   ))
                 )}
@@ -321,60 +336,73 @@ const Home = () => {
       </div>
 
       {/* Chart Preview Popup */}
-{chartPopupOpen && selectedChart && (
-  <div className="fixed inset-0 bg-black/40 z-50 flex justify-center items-center">
-    <div className="bg-white p-6 rounded-xl shadow-2xl max-w-3xl w-full relative">
-      <button
-        onClick={() => setChartPopupOpen(false)}
-        className="absolute top-3 right-3 text-gray-600 hover:text-red-500 cursor-pointer"
-      >
-        <MdClose size={24} />
-      </button>
+      {chartPopupOpen && selectedChart && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-xl shadow-2xl max-w-3xl w-full relative">
+            <button
+              onClick={() => setChartPopupOpen(false)}
+              className="absolute top-3 right-3 text-gray-600 hover:text-red-500 cursor-pointer"
+            >
+              <MdClose size={24} />
+            </button>
 
-      <h2 className="text-xl font-semibold text-indigo-600 mb-4">{selectedChart.fileName}</h2>
+            <h2 className="text-xl font-semibold text-indigo-600 mb-4">
+              {selectedChart.fileName}
+            </h2>
 
-      <div id="homeChart" className="mb-6">
-        {(() => {
-          const chartData = {
-            labels: selectedChart.fileData?.map(row => row[selectedChart.xAxis]),
-            datasets: [
-              {
-                label: `${selectedChart.xAxis} vs ${selectedChart.yAxis}`,
-                data: selectedChart.fileData?.map(row => row[selectedChart.yAxis]),
-                backgroundColor: "rgba(99, 102, 241, 0.6)",
-                borderColor: "rgba(99, 102, 241, 1)",
-                borderWidth: 1,
-              },
-            ],
-          };
+            <div id="homeChart" className="mb-6">
+              {(() => {
+                const chartData = {
+                  labels: selectedChart.fileData?.map(
+                    (row) => row[selectedChart.xAxis]
+                  ),
+                  datasets: [
+                    {
+                      label: `${selectedChart.xAxis} vs ${selectedChart.yAxis}`,
+                      data: selectedChart.fileData?.map(
+                        (row) => row[selectedChart.yAxis]
+                      ),
+                      backgroundColor: "rgba(99, 102, 241, 0.6)",
+                      borderColor: "rgba(99, 102, 241, 1)",
+                      borderWidth: 1,
+                    },
+                  ],
+                };
 
-          switch (selectedChart.chartType) {
-            case "Bar": return <Bar data={chartData} />;
-            case "Line": return <Line data={chartData} />;
-            case "Pie": return <Pie className="max-h-70"  data={chartData} />;
-            case "Doughnut": return <Doughnut className="max-h-70" data={chartData} />;
-            default: return <p className="text-gray-500">Unsupported Chart Type</p>;
-          }
-        })()}
-      </div>
+                switch (selectedChart.chartType) {
+                  case "Bar":
+                    return <Bar data={chartData} />;
+                  case "Line":
+                    return <Line data={chartData} />;
+                  case "Pie":
+                    return <Pie className="max-h-70" data={chartData} />;
+                  case "Doughnut":
+                    return <Doughnut className="max-h-70" data={chartData} />;
+                  default:
+                    return (
+                      <p className="text-gray-500">Unsupported Chart Type</p>
+                    );
+                }
+              })()}
+            </div>
 
-      <div className="flex justify-end gap-4">
-        <button
-          onClick={() => downloadRenderedChart("png")}
-          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-        >
-          Download PNG
-        </button>
-        <button
-          onClick={() => downloadRenderedChart("pdf")}
-          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-        >
-          Download PDF
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => downloadRenderedChart("png")}
+                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+              >
+                Download PNG
+              </button>
+              <button
+                onClick={() => downloadRenderedChart("pdf")}
+                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+              >
+                Download PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </>

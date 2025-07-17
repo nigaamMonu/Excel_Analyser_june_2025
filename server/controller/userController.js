@@ -24,9 +24,25 @@ export const getUserData = async (req,res)=>{
           name:user.name,
           isAccountVerified:user.isAccountVerified,
           email:user.email,
+          role:user.role,
         }
       })
     }catch(err){
       return res.json({success:false,message:err.message});
     }
+}
+
+// Function to get all users
+// This function retrieves all users from the database and returns them in a sorted order.
+// api/user/admin/all-users
+export const getAllUsers = async (req,res)=>{
+  try{
+    const users = await userModel.find().sort({createdAt: -1});
+    if(!users || users.length === 0){
+      return res.json({success:false,message:"No users found."});
+    }
+    return res.json({success:true,users});
+  }catch(err){
+    return res.json({success:false,message:err.message});
+  }
 }
